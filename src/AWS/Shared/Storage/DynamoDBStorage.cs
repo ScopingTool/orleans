@@ -132,7 +132,7 @@ namespace Orleans.Transactions.DynamoDB
                 this._service.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
             {
                 // Local DynamoDB instance (for testing)
-                var credentials = new BasicAWSCredentials("dummy", "dummyKey");
+                var credentials = new BasicAWSCredentials(this._accessKey, this.secretKey);
                 this._ddbClient = new AmazonDynamoDBClient(credentials, new AmazonDynamoDBConfig { ServiceURL = this._service });
             }
             else if (!string.IsNullOrEmpty(this._accessKey) && !string.IsNullOrEmpty(this.secretKey) && !string.IsNullOrEmpty(this._token))
