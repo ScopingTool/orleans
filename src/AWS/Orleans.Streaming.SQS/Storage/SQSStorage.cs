@@ -82,11 +82,20 @@ namespace OrleansAWSUtils.Storage
 
         private void CreateClient()
         {
-            if (service.StartsWith("http://", StringComparison.OrdinalIgnoreCase) ||
-                service.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
+            if ((service.StartsWith("http://", StringComparison.OrdinalIgnoreCase) ||
+                 service.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
+                && (string.IsNullOrWhiteSpace(accessKey) || string.IsNullOrWhiteSpace(secretKey)))
             {
                 // Local SQS instance (for testing)
                 var credentials = new BasicAWSCredentials("dummy", "dummyKey");
+                sqsClient = new AmazonSQSClient(credentials, new AmazonSQSConfig { ServiceURL = service });
+            }
+            else if ((service.StartsWith("http://", StringComparison.OrdinalIgnoreCase) ||
+                      service.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
+                     && !string.IsNullOrWhiteSpace(accessKey) && !string.IsNullOrWhiteSpace(secretKey))
+            {
+                // Remote non AWS provider SQS instance
+                var credentials = new BasicAWSCredentials(accessKey, secretKey);
                 sqsClient = new AmazonSQSClient(credentials, new AmazonSQSConfig { ServiceURL = service });
             }
             else if (!string.IsNullOrEmpty(accessKey) && !string.IsNullOrEmpty(secretKey))
